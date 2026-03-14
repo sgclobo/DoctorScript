@@ -52,7 +52,7 @@ export default function PatientsScreen() {
         <View className="px-6 py-4 flex-row items-center justify-between border-b border-outline_variant">
           <View className="flex-row items-center gap-3">
             <IconSymbol name="cross.case.fill" size={24} color="#00488d" />
-            <Text className="text-xl font-display font-extrabold text-primary">MedScript</Text>
+            <Text className="text-xl font-display font-extrabold text-primary">DoctorScript</Text>
           </View>
         </View>
 

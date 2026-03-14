@@ -186,10 +186,11 @@ export default function PrescriptionsScreen() {
     
     try {
       const { uri } = await Print.printToFileAsync({ html });
-      const newUri = (FileSystem as any).documentDirectory + getFormattedFileName('pdf');
-      await FileSystem.copyAsync({ from: uri, to: newUri });
+      const timestamp = new Date().getTime();
+      const uniqueNewUri = `${(FileSystem as any).cacheDirectory}R-${detailData.patient_name.replace(/[^a-zA-Z0-9]/g, '_')}-${detailData.date}-${timestamp}.pdf`;
+      await (FileSystem as any).copyAsync({ from: uri, to: uniqueNewUri });
       if (Platform.OS === 'ios' || Platform.OS === 'android') {
-        await Sharing.shareAsync(newUri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        await Sharing.shareAsync(uniqueNewUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
       }
     } catch (error) {
       console.error(error);
@@ -201,11 +202,26 @@ export default function PrescriptionsScreen() {
     try {
       if (viewShotRef.current && viewShotRef.current.capture) {
         const uri = await viewShotRef.current.capture();
-        const newUri = (FileSystem as any).documentDirectory + getFormattedFileName('jpg');
-        await FileSystem.copyAsync({ from: uri, to: newUri });
         
-        if (Platform.OS === 'ios' || Platform.OS === 'android') {
-          await Sharing.shareAsync(newUri, { mimeType: 'image/jpeg', dialogTitle: 'Save Image' });
+        let savedToGallery = false;
+        try {
+          const permission = await MediaLibrary.requestPermissionsAsync();
+          if (permission.granted) {
+            await MediaLibrary.saveToLibraryAsync(uri);
+            savedToGallery = true;
+            Alert.alert('Success', 'Image saved to gallery');
+          }
+        } catch (mediaErr) {
+          console.log('MediaLibrary failed, falling back to Sharing:', mediaErr);
+        }
+
+        if (!savedToGallery) {
+          if (Platform.OS === 'ios' || Platform.OS === 'android') {
+            const timestamp = new Date().getTime();
+            const uniqueNewUri = `${(FileSystem as any).cacheDirectory}R-${detailData.patient_name.replace(/[^a-zA-Z0-9]/g, '_')}-${detailData.date}-${timestamp}.jpg`;
+            await (FileSystem as any).copyAsync({ from: uri, to: uniqueNewUri });
+            await Sharing.shareAsync(uniqueNewUri, { mimeType: 'image/jpeg', dialogTitle: 'Save Image' });
+          }
         }
       }
     } catch (err) {
@@ -395,7 +411,7 @@ export default function PrescriptionsScreen() {
       <View className="px-6 py-4 flex-row items-center justify-between border-b border-outline_variant">
         <View className="flex-row items-center gap-3">
           <IconSymbol name="cross.case.fill" size={24} color="#00488d" />
-          <Text className="text-xl font-display font-extrabold text-primary">MedScript</Text>
+          <Text className="text-xl font-display font-extrabold text-primary">DoctorScript</Text>
         </View>
         <TouchableOpacity 
           className="w-10 h-10 rounded-full bg-primary items-center justify-center shadow-lg hover:scale-105"

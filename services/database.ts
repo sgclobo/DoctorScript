@@ -7,8 +7,8 @@ export const getDB = async () => {
 export const initDB = async () => {
   const db = await getDB();
   
+  await db.execAsync('PRAGMA journal_mode = WAL;');
   await db.execAsync(`
-    PRAGMA journal_mode = WAL;
     CREATE TABLE IF NOT EXISTS doctors (
       id INTEGER PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
@@ -17,12 +17,16 @@ export const initDB = async () => {
       phone TEXT,
       signature TEXT
     );
+  `);
+  await db.execAsync(`
     CREATE TABLE IF NOT EXISTS patients (
       id INTEGER PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
       dob TEXT NOT NULL,
       phone TEXT
     );
+  `);
+  await db.execAsync(`
     CREATE TABLE IF NOT EXISTS prescriptions (
       id INTEGER PRIMARY KEY NOT NULL,
       patient_id INTEGER NOT NULL,
@@ -32,6 +36,8 @@ export const initDB = async () => {
       FOREIGN KEY (patient_id) REFERENCES patients (id),
       FOREIGN KEY (doctor_id) REFERENCES doctors (id)
     );
+  `);
+  await db.execAsync(`
     CREATE TABLE IF NOT EXISTS medications (
       id INTEGER PRIMARY KEY NOT NULL,
       prescription_id INTEGER NOT NULL,
