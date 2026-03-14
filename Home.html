@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#4d607e",
+              "error-container": "#ffdad6",
+              "inverse-on-surface": "#eef1f6",
+              "on-surface-variant": "#424752",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#b4c7ea",
+              "surface-tint": "#005db5",
+              "on-error": "#ffffff",
+              "primary-fixed": "#d6e3ff",
+              "outline": "#727783",
+              "on-secondary": "#ffffff",
+              "tertiary-fixed": "#a0efff",
+              "inverse-primary": "#a8c8ff",
+              "surface": "#f7f9fe",
+              "primary": "#00488d",
+              "on-primary-fixed": "#001b3d",
+              "on-surface": "#181c1f",
+              "on-primary-fixed-variant": "#00468b",
+              "surface-bright": "#f7f9fe",
+              "secondary-container": "#c7dbff",
+              "primary-fixed-dim": "#a8c8ff",
+              "secondary": "#4c5f7d",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#ebeef3",
+              "primary-container": "#005fb8",
+              "on-tertiary-container": "#90e8fa",
+              "on-tertiary-fixed": "#001f25",
+              "surface-container-low": "#f1f4f8",
+              "surface-container-highest": "#e0e3e7",
+              "background": "#f7f9fe",
+              "tertiary": "#00505b",
+              "error": "#ba1a1a",
+              "surface-dim": "#d7dadf",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary-fixed": "#d5e3ff",
+              "on-secondary-fixed-variant": "#344765",
+              "on-background": "#181c1f",
+              "outline-variant": "#c2c6d4",
+              "on-tertiary-fixed-variant": "#004e59",
+              "on-secondary-fixed": "#051c37",
+              "surface-container-high": "#e5e8ed",
+              "inverse-surface": "#2d3134",
+              "surface-variant": "#e0e3e7",
+              "on-primary-container": "#cadcff",
+              "tertiary-fixed-dim": "#7ad4e5",
+              "tertiary-container": "#006a78"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+      .glass-nav {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .clinical-shadow {
+        box-shadow: 0px 12px 32px rgba(0, 70, 139, 0.06);
+      }
+      .primary-gradient {
+        background: linear-gradient(135deg, #00488d 0%, #005fb8 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 glass-nav border-b border-outline-variant/20 px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="medical_services">medical_services</span>
+<h1 class="text-xl font-extrabold tracking-tight text-primary">MedScript</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<!-- Hero Section -->
+<section class="mb-12">
+<div class="relative overflow-hidden rounded-xl primary-gradient p-10 clinical-shadow">
+<div class="relative z-10 max-w-2xl">
+<h2 class="text-4xl font-extrabold text-on-primary mb-4">Welcome back, Dr. Julian.</h2>
+<p class="text-on-primary-container text-lg leading-relaxed opacity-90">
+                        Efficiently manage your clinical workspace with precision. Access patient records, manage practitioners, and issue digital prescriptions from one secure dashboard.
+                    </p>
+</div>
+<!-- Abstract Texture Decor -->
+<div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-white/10 blur-3xl"></div>
+<div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-tertiary-fixed/20 blur-2xl"></div>
+</div>
+</section>
+<!-- Main Action Grid (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Register Patient -->
+<div class="bg-surface-container-lowest p-8 rounded-xl clinical-shadow border border-outline-variant/10 hover:translate-y-[-4px] transition-transform cursor-pointer group">
+<div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="person_add">person_add</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">Register Patient</h3>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Add a new clinical profile to the database and initialize their medical history records.</p>
+<div class="flex items-center text-primary font-semibold text-sm">
+                    Open Patient Portal
+                    <span class="material-symbols-outlined ml-2 text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Register Doctor -->
+<div class="bg-surface-container-lowest p-8 rounded-xl clinical-shadow border border-outline-variant/10 hover:translate-y-[-4px] transition-transform cursor-pointer group">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="local_hospital">local_hospital</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">Register Doctor</h3>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Onboard new medical practitioners, assign specialty departments and clinical credentials.</p>
+<div class="flex items-center text-secondary font-semibold text-sm">
+                    Manage Staffing
+                    <span class="material-symbols-outlined ml-2 text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Prescription List -->
+<div class="bg-surface-container-lowest p-8 rounded-xl clinical-shadow border border-outline-variant/10 hover:translate-y-[-4px] transition-transform cursor-pointer group">
+<div class="w-14 h-14 rounded-full bg-tertiary-fixed flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="prescriptions">prescriptions</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">Prescription List</h3>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Review active digital prescriptions, pharmacy fulfillments, and medication logs.</p>
+<div class="flex items-center text-tertiary font-semibold text-sm">
+                    View Logs
+                    <span class="material-symbols-outlined ml-2 text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</section>
+<!-- Asymmetric Secondary Layout -->
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Clinical Activity Feed -->
+<div class="flex-grow">
+<div class="flex items-center justify-between mb-6">
+<h4 class="text-xl font-bold">Recent Clinical Activity</h4>
+<span class="text-primary text-sm font-medium cursor-pointer">View History</span>
+</div>
+<div class="space-y-4">
+<!-- Activity Item -->
+<div class="flex items-center p-4 bg-surface-container-low rounded-xl border border-transparent hover:bg-surface-container-lowest hover:border-outline-variant/20 transition-all">
+<div class="w-10 h-10 rounded-full overflow-hidden mr-4">
+<img class="w-full h-full object-cover" data-alt="Portrait of a female doctor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClKLR0S_86MS5WTb-Qj1_Zbt7-3Lxmj7IbJjJXGcFJfRQ2ybPP7t71TGBqQNiAsh24TGEbphIWhW8FGJSNP4wMtVEfttVh8gfXvfgPWFfBBowwm9gyPuSztlKXUF83iYJAteCw3PAErVhrQKs3Bfz-fVtZcv0TdSDr6DhN4NQsppYj0OAdcojUz6ieETe0NqwjnHVWpCmlHZsE8lDJ9u_Hu2T9ESJ0lmnOODWQxk8Tyn2KOwttgigZoBe8Yyp9X9JpNX9Asob4RsY"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm font-semibold">New Prescription Issued</p>
+<p class="text-xs text-on-surface-variant">Dr. Sarah Smith for Patient #8821</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-on-surface-variant">2 mins ago</p>
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex items-center p-4 bg-surface-container-low rounded-xl border border-transparent hover:bg-surface-container-lowest hover:border-outline-variant/20 transition-all">
+<div class="w-10 h-10 rounded-full overflow-hidden mr-4">
+<img class="w-full h-full object-cover" data-alt="Portrait of a male patient" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfvXtB117-KoqUj96QVSn9lKIJO3eNcdxfx_PuWlgUrtgmzx5GfiFr3JA3hFnijFQAnoUcovt3N11kE7ofAmwDGA1I50cJraOVT-HfpGPjarSKDHttdnwvdKgq6YCu4l8zo00nvjK0tV3Y82TZTYbPbV0JAUclUtkHGYc42Ha3ACC8hCeMQppaPqimhkZDwkxeSAv4N4Ls0BZhgZXAsEDiA8GV-IfgfEYSQ-zWE1VASj-M5WHf5Ez_d6FTGfKzwhhDlLsfh55jdQg"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm font-semibold">Patient Registration Complete</p>
+<p class="text-xs text-on-surface-variant">Emma Thompson (ID: 9904)</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-on-surface-variant">15 mins ago</p>
+<span class="inline-block w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex items-center p-4 bg-surface-container-low rounded-xl border border-transparent hover:bg-surface-container-lowest hover:border-outline-variant/20 transition-all">
+<div class="w-10 h-10 rounded-full overflow-hidden mr-4">
+<img class="w-full h-full object-cover" data-alt="Portrait of a medical professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEGZ_1zNBUMc3jDxRNkmhuWXUFE4gk8Gc35IZ3mGMyW8n52MdOCt4FO1ZsT37stdBkpVJ-Eu0iHFngPT43XFNvIW3utmpvxLn6CvtZl9cWcaa9xm1QmCD3-ldUyoeB7n_CA0V4Bzz0VzzXWxDtbCpEKUCy_s-CxB9VPEcR10q8fbxDhkl421wN7xzSIlPLPN2rgnO27cot4gjYtuHA-gQOrKYDtnwTaMTW6vJGaXNTCBAxfeAAURAllgAAuJdVdVSab_tB7U0TqI0"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm font-semibold">System Update</p>
+<p class="text-xs text-on-surface-variant">Database synchronization successful</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-on-surface-variant">1 hour ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats / Insights Panel -->
+<div class="lg:w-80 shrink-0">
+<div class="bg-surface-container-high rounded-xl p-6">
+<h4 class="text-lg font-bold mb-6">Today's Snapshot</h4>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-xs font-semibold mb-2">
+<span>Patient Wait Time</span>
+<span class="text-primary">85% Capacity</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 85%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-semibold mb-2">
+<span>Pharmacy Fulfilment</span>
+<span class="text-tertiary">92% Completion</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 92%"></div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Patients</p>
+<p class="text-2xl font-bold">1,240</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Active Drs</p>
+<p class="text-2xl font-bold">48</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 primary-gradient text-on-primary rounded-full clinical-shadow flex items-center justify-center hover:scale-110 transition-transform z-40">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 right-0 glass-nav border-t border-outline-variant/20 px-6 py-2 flex items-center justify-around z-50">
+<div class="flex flex-col items-center gap-1 text-primary cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-semibold">Home</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-[10px] font-medium">Patients</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined" data-icon="medical_information">medical_information</span>
+<span class="text-[10px] font-medium">Doctors</span>
+</div>
+</nav>
+</body></html>
