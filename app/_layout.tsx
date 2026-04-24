@@ -32,9 +32,11 @@ export default function RootLayout() {
         if (savedLang) {
           i18n.changeLanguage(savedLang);
         }
-        setDbInitiated(true);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        setDbInitiated(true);
+      });
   }, []);
 
   useEffect(() => {

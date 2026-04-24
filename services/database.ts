@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { Platform } from "react-native";
 
 export const getDB = async () => {
   return await SQLite.openDatabaseAsync("doctorscript2.db");
@@ -7,7 +8,10 @@ export const getDB = async () => {
 export const initDB = async () => {
   const db = await getDB();
 
-  await db.execAsync("PRAGMA journal_mode = WAL;");
+  // WAL mode is only supported on native SQLite; skip on web.
+  if (Platform.OS !== "web") {
+    await db.execAsync("PRAGMA journal_mode = WAL;");
+  }
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS doctors (
       id INTEGER PRIMARY KEY NOT NULL,

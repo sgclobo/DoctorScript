@@ -13,7 +13,9 @@ import { useTranslation } from "react-i18next";
 import {
     Alert,
     Image,
+    Modal,
     Platform,
+    Pressable,
     ScrollView,
     Text,
     TextInput,
@@ -43,6 +45,9 @@ export default function HomeScreen() {
   const [todayPrescriptionCount, setTodayPrescriptionCount] = useState(0);
   const [totalPrescriptionCount, setTotalPrescriptionCount] = useState(0);
   const [topMedication, setTopMedication] = useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [langPickerVisible, setLangPickerVisible] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
   const pickSignature = async () => {
     try {
@@ -203,18 +208,7 @@ export default function HomeScreen() {
     }
   };
 
-  const showLanguagePicker = () => {
-    Alert.alert(t("lang_select"), undefined, [
-      ...SUPPORTED_LANGUAGES.map((lang) => ({
-        text: lang.label,
-        onPress: async () => {
-          await i18n.changeLanguage(lang.code);
-          await setStoredLanguage(lang.code);
-        },
-      })),
-      { text: t("cancel"), style: "cancel" as const },
-    ]);
-  };
+  const showLanguagePicker = () => setLangPickerVisible(true);
 
   const handleLogout = async () => {
     const canLock = await hasDoctorPassword();
@@ -229,44 +223,15 @@ export default function HomeScreen() {
       setIsEditing(true);
       return;
     }
-
     await setAppLocked(true);
-    Alert.alert(t("success"), t("auth_logged_out"));
     router.replace("/lock");
   };
 
-  const showProfileMenu = () => {
-    Alert.alert(t("home_profile_options"), t("home_manage_workspace"), [
-      {
-        text: t("home_edit_profile"),
-        onPress: () => {
-          setDocName(doctor?.name || "");
-          setEmail(doctor?.email || "");
-          setSpecialty(doctor?.specialty || "");
-          setLicense(doctor?.license_number || "");
-          setPhone(doctor?.phone || "");
-          setSignatureUri(doctor?.signature || "");
-          setPassword("");
-          setIsEditing(true);
-        },
-      },
-      { text: t("home_export_csv"), onPress: exportCSV },
-      { text: t("home_change_language"), onPress: showLanguagePicker },
-      { text: t("auth_logout"), onPress: handleLogout },
-      {
-        text: t("home_delete_profile"),
-        onPress: confirmDelete,
-        style: "destructive",
-      },
-      { text: t("cancel"), style: "cancel" },
-    ]);
-  };
+  const showProfileMenu = () => setMenuVisible(true);
 
   const confirmDelete = () => {
-    Alert.alert(t("home_delete_workspace"), t("home_delete_confirm"), [
-      { text: t("cancel"), style: "cancel" },
-      { text: t("delete"), style: "destructive", onPress: performDelete },
-    ]);
+    setMenuVisible(false);
+    setDeleteConfirmVisible(true);
   };
 
   const performDelete = async () => {
@@ -331,6 +296,196 @@ export default function HomeScreen() {
       Alert.alert(t("error"), t("home_error_export"));
     }
   };
+
+  const langPickerModal = (
+    <Modal
+      visible={langPickerVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setLangPickerVisible(false)}
+    >
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "flex-end",
+        }}
+        onPress={() => setLangPickerVisible(false)}
+      >
+        <Pressable
+          className="bg-surface rounded-t-2xl p-6 pb-12"
+          onPress={(e) => e.stopPropagation()}
+        >
+          <Text className="font-display font-bold text-xl text-on_surface mb-6 text-center">
+            {t("lang_select")}
+          </Text>
+          {SUPPORTED_LANGUAGES.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              className="py-4 border-b border-outline_variant items-center"
+              onPress={async () => {
+                await i18n.changeLanguage(lang.code);
+                await setStoredLanguage(lang.code);
+                setLangPickerVisible(false);
+              }}
+            >
+              <Text className="text-on_surface text-base font-medium">
+                {lang.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity
+            className="mt-4 py-4 items-center"
+            onPress={() => setLangPickerVisible(false)}
+          >
+            <Text className="text-secondary font-medium">{t("cancel")}</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+
+  const profileMenuModal = (
+    <Modal
+      visible={menuVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setMenuVisible(false)}
+    >
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "flex-end",
+        }}
+        onPress={() => setMenuVisible(false)}
+      >
+        <Pressable
+          className="bg-surface rounded-t-2xl p-6 pb-12"
+          onPress={(e) => e.stopPropagation()}
+        >
+          <Text className="font-display font-bold text-xl text-on_surface mb-1 text-center">
+            {t("home_profile_options")}
+          </Text>
+          <Text className="text-secondary text-sm text-center mb-6">
+            {t("home_manage_workspace")}
+          </Text>
+          <TouchableOpacity
+            className="py-4 border-b border-outline_variant items-center"
+            onPress={() => {
+              setMenuVisible(false);
+              setDocName(doctor?.name || "");
+              setEmail(doctor?.email || "");
+              setSpecialty(doctor?.specialty || "");
+              setLicense(doctor?.license_number || "");
+              setPhone(doctor?.phone || "");
+              setSignatureUri(doctor?.signature || "");
+              setPassword("");
+              setIsEditing(true);
+            }}
+          >
+            <Text className="text-on_surface text-base font-medium">
+              {t("home_edit_profile")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-4 border-b border-outline_variant items-center"
+            onPress={() => {
+              setMenuVisible(false);
+              exportCSV();
+            }}
+          >
+            <Text className="text-on_surface text-base font-medium">
+              {t("home_export_csv")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-4 border-b border-outline_variant items-center"
+            onPress={() => {
+              setMenuVisible(false);
+              setLangPickerVisible(true);
+            }}
+          >
+            <Text className="text-on_surface text-base font-medium">
+              {t("home_change_language")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-4 border-b border-outline_variant items-center"
+            onPress={() => {
+              setMenuVisible(false);
+              handleLogout();
+            }}
+          >
+            <Text className="text-on_surface text-base font-medium">
+              {t("auth_logout")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-4 border-b border-outline_variant items-center"
+            onPress={confirmDelete}
+          >
+            <Text className="text-error text-base font-medium">
+              {t("home_delete_profile")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="mt-4 py-4 items-center"
+            onPress={() => setMenuVisible(false)}
+          >
+            <Text className="text-secondary font-medium">{t("cancel")}</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+
+  const deleteConfirmModal = (
+    <Modal
+      visible={deleteConfirmVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setDeleteConfirmVisible(false)}
+    >
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "center",
+        }}
+        onPress={() => setDeleteConfirmVisible(false)}
+      >
+        <Pressable
+          className="bg-surface mx-6 rounded-2xl p-6"
+          onPress={(e) => e.stopPropagation()}
+        >
+          <Text className="font-display font-bold text-xl text-on_surface mb-2 text-center">
+            {t("home_delete_workspace")}
+          </Text>
+          <Text className="text-secondary text-sm text-center mb-6">
+            {t("home_delete_confirm")}
+          </Text>
+          <TouchableOpacity
+            className="bg-error py-4 rounded-lg items-center mb-3"
+            onPress={() => {
+              setDeleteConfirmVisible(false);
+              performDelete();
+            }}
+          >
+            <Text className="font-display font-bold text-white">
+              {t("delete")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-4 items-center"
+            onPress={() => setDeleteConfirmVisible(false)}
+          >
+            <Text className="text-secondary font-medium">{t("cancel")}</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
 
   if (loading) {
     return <SafeAreaView className="flex-1 bg-surface" />;
@@ -521,6 +676,7 @@ export default function HomeScreen() {
             </View>
           </View>
         </ScrollView>
+        {langPickerModal}
       </SafeAreaView>
     );
   }
@@ -654,6 +810,9 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      {langPickerModal}
+      {profileMenuModal}
+      {deleteConfirmModal}
     </SafeAreaView>
   );
 }
