@@ -1,13 +1,13 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 export const getDB = async () => {
-  return await SQLite.openDatabaseAsync('doctorscript2.db');
+  return await SQLite.openDatabaseAsync("doctorscript2.db");
 };
 
 export const initDB = async () => {
   const db = await getDB();
-  
-  await db.execAsync('PRAGMA journal_mode = WAL;');
+
+  await db.execAsync("PRAGMA journal_mode = WAL;");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS doctors (
       id INTEGER PRIMARY KEY NOT NULL,
@@ -46,6 +46,13 @@ export const initDB = async () => {
       frequency TEXT NOT NULL,
       duration TEXT NOT NULL,
       FOREIGN KEY (prescription_id) REFERENCES prescriptions (id)
+    );
+  `);
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY NOT NULL,
+      value TEXT NOT NULL
     );
   `);
 

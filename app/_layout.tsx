@@ -1,5 +1,8 @@
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import "@/i18n";
+import i18n from "@/i18n";
 import { initDB } from "@/services/database";
+import { getStoredLanguage } from "@/services/language";
 import {
     DarkTheme,
     DefaultTheme,
@@ -16,13 +19,19 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+const APP_VERSION = "1.0.0";
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [dbInitiated, setDbInitiated] = useState(false);
 
   useEffect(() => {
     initDB()
-      .then(() => {
+      .then(async () => {
+        const savedLang = await getStoredLanguage();
+        if (savedLang) {
+          i18n.changeLanguage(savedLang);
+        }
         setDbInitiated(true);
       })
       .catch(console.error);
@@ -37,14 +46,70 @@ export default function RootLayout() {
       return;
     }
 
-    const registerServiceWorker = () => {
-      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    let hasRefreshed = false;
+
+    const promptServiceWorkerActivation = (
+      registration: ServiceWorkerRegistration,
+    ) => {
+      registration.waiting?.postMessage({ type: "SKIP_WAITING" });
     };
 
+    const attachUpdateHandlers = (registration: ServiceWorkerRegistration) => {
+      if (registration.waiting) {
+        promptServiceWorkerActivation(registration);
+      }
+
+      registration.addEventListener("updatefound", () => {
+        const installingWorker = registration.installing;
+
+        if (!installingWorker) {
+          return;
+        }
+
+        installingWorker.addEventListener("statechange", () => {
+          if (
+            installingWorker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            promptServiceWorkerActivation(registration);
+          }
+        });
+      });
+    };
+
+    const handleControllerChange = () => {
+      if (hasRefreshed) {
+        return;
+      }
+
+      hasRefreshed = true;
+      window.location.reload();
+    };
+
+    const registerServiceWorker = async () => {
+      try {
+        const registration = await navigator.serviceWorker.register(
+          `/sw.js?v=${APP_VERSION}`,
+        );
+        attachUpdateHandlers(registration);
+        registration.update().catch(console.error);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      handleControllerChange,
+    );
     window.addEventListener("load", registerServiceWorker);
 
     return () => {
       window.removeEventListener("load", registerServiceWorker);
+      navigator.serviceWorker.removeEventListener(
+        "controllerchange",
+        handleControllerChange,
+      );
     };
   }, []);
 

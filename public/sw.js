@@ -1,4 +1,5 @@
-const CACHE_NAME = "doctorscript-pwa-v1";
+const CACHE_VERSION = "1.0.0";
+const CACHE_NAME = `doctorscript-pwa-${CACHE_VERSION}`;
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
@@ -29,6 +30,12 @@ self.addEventListener("activate", (event) => {
       ),
   );
   self.clients.claim();
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", (event) => {

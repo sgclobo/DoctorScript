@@ -2,6 +2,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { getDB } from "@/services/database";
 import { Patient } from "@/types/schema";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Alert,
     ScrollView,
@@ -13,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PatientsScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [phone, setPhone] = useState("");
@@ -36,7 +38,7 @@ export default function PatientsScreen() {
 
   const handleSave = async () => {
     if (!name || !dob || !phone) {
-      Alert.alert("Error", "Please fill all fields");
+      Alert.alert(t("error"), t("patients_error_fields"));
       return;
     }
 
@@ -51,11 +53,11 @@ export default function PatientsScreen() {
       setName("");
       setDob("");
       setPhone("");
-      Alert.alert("Success", "Patient registered successfully");
+      Alert.alert(t("success"), t("patients_success_registered"));
       fetchPatients();
     } catch (e) {
       console.error(e);
-      Alert.alert("Error", "Failed to register patient");
+      Alert.alert(t("error"), t("patients_error_register"));
     }
   };
 
@@ -76,14 +78,13 @@ export default function PatientsScreen() {
           {/* Header Section */}
           <View className="mb-8">
             <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1">
-              Clinical Intake
+              {t("patients_clinical_intake")}
             </Text>
             <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2">
-              New Patient Profile
+              {t("patients_new_profile")}
             </Text>
             <Text className="text-secondary text-base">
-              Enter patient information with precision. All fields are required
-              for clinical records.
+              {t("patients_profile_desc")}
             </Text>
           </View>
 
@@ -91,12 +92,12 @@ export default function PatientsScreen() {
           <View className="bg-surface_container_lowest p-6 rounded-xl border border-outline_variant mb-8 space-y-6 shadow-sm">
             <View className="mb-4">
               <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2">
-                FULL NAME
+                {t("patients_full_name").toUpperCase()}
               </Text>
               <View className="relative">
                 <TextInput
                   className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
-                  placeholder="e.g. Jonathan Doe"
+                  placeholder={t("patients_name_placeholder")}
                   placeholderTextColor="#727783"
                   value={name}
                   onChangeText={setName}
@@ -106,12 +107,12 @@ export default function PatientsScreen() {
 
             <View className="mb-4">
               <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2">
-                DATE OF BIRTH (YYYY-MM-DD)
+                {t("patients_dob").toUpperCase()}
               </Text>
               <View className="relative">
                 <TextInput
                   className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
-                  placeholder="2000-01-01"
+                  placeholder={t("patients_dob_placeholder")}
                   placeholderTextColor="#727783"
                   value={dob}
                   onChangeText={setDob}
@@ -121,12 +122,12 @@ export default function PatientsScreen() {
 
             <View className="mb-6">
               <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2">
-                PHONE NUMBER
+                {t("patients_phone").toUpperCase()}
               </Text>
               <View className="relative">
                 <TextInput
                   className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder={t("patients_phone_placeholder")}
                   placeholderTextColor="#727783"
                   keyboardType="phone-pad"
                   value={phone}
@@ -140,7 +141,7 @@ export default function PatientsScreen() {
               onPress={handleSave}
             >
               <Text className="font-display font-bold text-white">
-                Save Patient
+                {t("patients_save")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -149,7 +150,7 @@ export default function PatientsScreen() {
           {patients.length > 0 && (
             <View>
               <Text className="text-xl font-display font-bold text-on_surface mb-4">
-                Patient Profiles
+                {t("patients_profiles_title")}
               </Text>
               {patients.map((p) => (
                 <View
@@ -160,7 +161,8 @@ export default function PatientsScreen() {
                     {p.name}
                   </Text>
                   <Text className="text-on_surface_variant">
-                    DOB: {p.dob} | Phone: {p.phone}
+                    {t("patients_dob_label")} {p.dob} |{" "}
+                    {t("patients_phone_label")} {p.phone}
                   </Text>
                 </View>
               ))}
@@ -171,3 +173,4 @@ export default function PatientsScreen() {
     </SafeAreaView>
   );
 }
+
