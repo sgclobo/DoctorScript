@@ -1,11 +1,14 @@
 // Fallback for using MaterialIcons on Android and web.
 
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
-import { ComponentProps } from 'react';
-import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { SymbolViewProps, SymbolWeight } from "expo-symbols";
+import { ComponentProps } from "react";
+import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type IconMapping = Record<
+  SymbolViewProps["name"],
+  ComponentProps<typeof MaterialIcons>["name"]
+>;
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
@@ -14,21 +17,26 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
 const MAPPING = {
-  'house.fill': 'home',
-  'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
-  'chevron.left': 'chevron-left',
-  'cross.case.fill': 'medical-services',
-  'person.crop.circle.fill': 'account-circle',
-  'person.fill.badge.plus': 'person-add',
-  'doc.text.fill': 'description',
-  'plus': 'add',
-  'square.and.arrow.down.fill': 'download',
-  'xmark': 'close',
-  'person.3.fill': 'groups',
-  'doc.plaintext.fill': 'receipt',
-  'signature': 'draw',
+  "house.fill": "home",
+  "paperplane.fill": "send",
+  "chevron.left.forwardslash.chevron.right": "code",
+  "chevron.right": "chevron-right",
+  "chevron.left": "chevron-left",
+  "cross.case.fill": "medical-services",
+  "person.crop.circle.fill": "account-circle",
+  "person.fill.badge.plus": "person-add",
+  "doc.text.fill": "description",
+  plus: "add",
+  "square.and.arrow.down.fill": "download",
+  xmark: "close",
+  "person.3.fill": "groups",
+  "doc.plaintext.fill": "receipt",
+  signature: "draw",
+  "info.circle.fill": "info",
+  "questionmark.circle.fill": "help-outline",
+  "book.fill": "menu-book",
+  "envelope.fill": "email",
+  "message.fill": "chat",
 } as Partial<IconMapping>;
 
 /**
@@ -48,5 +56,12 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  return (
+    <MaterialIcons
+      color={color}
+      size={size}
+      name={MAPPING[name]}
+      style={style}
+    />
+  );
 }

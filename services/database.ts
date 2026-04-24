@@ -61,4 +61,16 @@ export const initDB = async () => {
   } catch (e) {
     // Column might already exist
   }
+
+  try {
+    await db.execAsync("ALTER TABLE doctors ADD COLUMN password TEXT;");
+  } catch (e) {
+    // Column might already exist
+  }
+
+  try {
+    await db.execAsync("ALTER TABLE doctors ADD COLUMN email TEXT;");
+  } catch (e) {
+    // Column might already exist
+  }
 };

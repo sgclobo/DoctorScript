@@ -4,6 +4,7 @@ import { Doctor, Medication, Patient } from "@/types/schema";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import * as Print from "expo-print";
+import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,7 @@ import ViewShot from "react-native-view-shot";
 
 export default function PrescriptionsScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [view, setView] = useState<"list" | "create" | "detail">("list");
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -282,9 +284,15 @@ export default function PrescriptionsScreen() {
               {t("rx_back")}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+            onPress={() => router.push("/about")}
+          >
+            <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
+          </TouchableOpacity>
         </View>
         <ScrollView contentContainerClassName="p-6 pb-24">
-          <Text className="font-display font-bold text-3xl mb-6 text-on_surface">
+          <Text className="font-display font-bold text-3xl mb-6 text-on_surface text-center">
             {t("rx_new")}
           </Text>
 
@@ -428,6 +436,12 @@ export default function PrescriptionsScreen() {
             <Text className="font-display font-bold text-primary text-lg">
               {t("rx_back")}
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+            onPress={() => router.push("/about")}
+          >
+            <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
           </TouchableOpacity>
         </View>
 
@@ -589,23 +603,31 @@ export default function PrescriptionsScreen() {
             DoctorScript
           </Text>
         </View>
-        <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-primary items-center justify-center shadow-lg hover:scale-105"
-          onPress={() => setView("create")}
-        >
-          <IconSymbol name="plus" size={24} color="#ffffff" />
-        </TouchableOpacity>
+        <View className="flex-row items-center gap-2">
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+            onPress={() => router.push("/about")}
+          >
+            <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-primary items-center justify-center shadow-lg hover:scale-105"
+            onPress={() => setView("create")}
+          >
+            <IconSymbol name="plus" size={24} color="#ffffff" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerClassName="px-6 py-8 pb-24">
-        <View className="mb-8">
-          <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1">
+        <View className="mb-8 items-center">
+          <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1 text-center">
             {t("rx_clinical_overview")}
           </Text>
-          <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2">
+          <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2 text-center">
             {t("rx_recent")}
           </Text>
-          <Text className="text-on_surface_variant max-w-sm mt-2">
+          <Text className="text-on_surface_variant max-w-sm mt-2 text-center">
             {t("rx_overview_desc")}
           </Text>
         </View>
@@ -664,4 +686,3 @@ export default function PrescriptionsScreen() {
     </SafeAreaView>
   );
 }
-

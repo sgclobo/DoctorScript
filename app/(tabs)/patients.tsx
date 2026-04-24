@@ -1,6 +1,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { getDB } from "@/services/database";
 import { Patient } from "@/types/schema";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PatientsScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [phone, setPhone] = useState("");
@@ -72,18 +74,24 @@ export default function PatientsScreen() {
               DoctorScript
             </Text>
           </View>
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+            onPress={() => router.push("/about")}
+          >
+            <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
+          </TouchableOpacity>
         </View>
 
         <View className="px-6 py-8">
           {/* Header Section */}
-          <View className="mb-8">
-            <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1">
+          <View className="mb-8 items-center">
+            <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1 text-center">
               {t("patients_clinical_intake")}
             </Text>
-            <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2">
+            <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2 text-center">
               {t("patients_new_profile")}
             </Text>
-            <Text className="text-secondary text-base">
+            <Text className="text-secondary text-base text-center">
               {t("patients_profile_desc")}
             </Text>
           </View>
@@ -173,4 +181,3 @@ export default function PatientsScreen() {
     </SafeAreaView>
   );
 }
-

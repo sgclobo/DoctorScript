@@ -9,16 +9,18 @@ const tet = {
   tab_home: "Uma",
   tab_patients: "Pasiente Sira",
   tab_prescriptions: "Reseita Sira",
+  tab_help: "Ajuda",
 
   // Home Screen
   home_welcome_setup: "Konfigurasaun Inisiál",
   home_edit_profile: "Edita Perfil",
   home_practitioner_profile: "Perfil Profisionál",
   home_setup_desc:
-    "Haree katak ne'e mak dala primeiru ita uza aplikasaun ne'e. Hakerek ita-nia detaillu iha okos atu emite reseita iha ita-nia naran.",
+    "Karik ida nee foin primeira vez itaboot uza aplikasaun ne'e. Hakerek ita-nia detaillu iha okos atu emite reseita iha ita-nia naran.",
   home_edit_desc:
     "Atualiza ita-nia detaillu profisionál no assinatura dijitál iha okos.",
   home_full_name: "Naran Kompletu",
+  home_email: "Email",
   home_specialty: "Espesialidade",
   home_license: "Numeru Lisensa (Opsionál)",
   home_contact_phone: "Telefone Kontaktu (Opsionál)",
@@ -26,9 +28,9 @@ const tet = {
   home_upload_signature: "Karrega Imajen Assinatura",
   home_complete_setup: "Kompleta Konfigurasaun",
   home_save_changes: "Rai Mudansa",
-  home_welcome_back: "Bem-vindo fali, {{name}}.",
+  home_welcome_back: "Bem-vindo, {{name}}.",
   home_hero_desc:
-    "Jere ita-nia espasu traballu klínika ho presizaun. Asesu registu pasiente, jere profisionál, no emite reseita dijitál husi dashboard seguru ida.",
+    "Jere ita-nia espasu traballu klínika ho presizaun. Asesu registu pasiente, jere profisionálmente, no emite reseita dijitál husi dashboard seguru ida.",
   home_today_snapshot: "Rezumu Ohin",
   home_patients_stat: "Pasiente Sira",
   home_active_drs: "Dotór Ativa",
@@ -55,6 +57,86 @@ const tet = {
   home_specialty_placeholder: "ex. Prátika Jerál",
   home_license_placeholder: "ex. MSP-9831",
   home_phone_placeholder: "+670 7xx-xxxx",
+  home_email_placeholder: "naran@example.com",
+  home_registered_patients: "Pasiente rejistadu",
+  home_prescriptions_today: "Reseita ohin",
+  home_prescriptions_total: "Total reseita",
+  home_most_prescribed_medicine: "Medikamentu ne'ebe preskreve liu",
+  home_none: "Laiha",
+  home_error_single_doctor:
+    "Dotór ida deit mak bele rejistu iha aparellu ida-ne'e.",
+
+  // Auth
+  auth_password: "Password",
+  auth_password_placeholder: "Hatama password",
+  auth_password_required: "Favor kria password atu kontinua.",
+  auth_email_required: "Favor hatama email atu kontinua.",
+  auth_password_edit_hint: "Husik mamuk atu bele uza nafatin password tuan.",
+  auth_logout: "Logout",
+  auth_logged_out: "Logout ho susesu.",
+  auth_enter_password: "Favor hatama ita-nia password.",
+  auth_invalid_password: "Password sala.",
+  auth_unlock: "Loke",
+  auth_unlock_title: "Sessão taka",
+  auth_unlock_subtitle: "Hatama password atu kontinua.",
+  auth_set_password_before_logout:
+    "Favor defini password iha Edita Perfil molok logout.",
+  auth_password_missing:
+    "Seidauk iha password ba dotór ida-ne'e. Fila no defini iha Edita Perfil.",
+  auth_back_home: "Fila ba Uma",
+  auth_forgot_password: "Haluha password? Rekupera liu husi email",
+  auth_recovery_email_placeholder: "Hatama email rejistadu",
+  auth_recover_via_email: "Haruka Email Rekuperasaun",
+  auth_recovery_sent:
+    "Draft email rekuperasaun loke ona. Haruka husi app email ita-nia.",
+  auth_recovery_missing_email:
+    "Seidauk rejista email ba perfil dotór ida-ne'e.",
+  auth_recovery_email_mismatch:
+    "Email la hanesan ho email dotór ne'ebé rejista.",
+  auth_recovery_missing_password: "Seidauk iha password ba dotór ida-ne'e.",
+  auth_recovery_open_failed: "La konsege loke app email atu rekupera password.",
+
+  // About & Guide
+  about_back: "Fila",
+  about_title: "Konaba DoctorScript",
+  about_subtitle: "Apoiu prátiku ba preskrisaun iha klínika",
+  about_tab_about: "Konaba",
+  about_tab_guide: "Guia Utilizador",
+  about_created_by: "Kria husi TimorApps",
+  about_description:
+    "DoctorScript ajuda kliniku sira atu rejista pasiente, hasai reseita dijitál no jere registu lalais.",
+  about_features:
+    "Funsaun prinsipal: interface multilingue, jestaun pasiente, kriasaun reseita, exporta dadus no app lock.",
+  about_privacy:
+    "Dadus rai lokal iha ita-nia aparellu. Proteje aparellu no password app ba konfidensialidade.",
+  guide_step_1_title: "1. Rejista ita-nia perfil",
+  guide_step_1_desc:
+    "Hatama detaillu profisionál, defini password no rai assinatura dijitál.",
+  guide_step_2_title: "2. Aumenta pasiente",
+  guide_step_2_desc:
+    "Loke aba Pasiente atu rejista naran, data moris no numeru telefone.",
+  guide_step_3_title: "3. Kria reseita",
+  guide_step_3_desc:
+    "Loke aba Reseita, hili pasiente, hatama medikamentu no instrusaun dosajen, depois rai.",
+  guide_step_4_title: "4. Exporta no seguru",
+  guide_step_4_desc:
+    "Uza opsaun exporta, logout bainhira presiza, no app sei husu password depois idle timeout.",
+  guide_step_5_title: "5. Rai hanesan app (Add to Home Screen)",
+  guide_step_5_desc_1:
+    "Iha Android Chrome: loke menu browser (pontu tolu) no hili Add to Home screen.",
+  guide_step_5_desc_2:
+    "Iha iPhone Safari: klik Share, depois hili Add to Home Screen.",
+  guide_step_5_desc_3:
+    "Depois aumenta ona, loke DoctorScript husi home screen hanesan app nativu.",
+
+  // Help tab
+  help_reference: "Referénsia Rapidu",
+  help_title: "Termu Latin ba Reseita",
+  help_subtitle:
+    "Termu Latin komun no abreviatura ne'ebé uza iha preskrisaun médika.",
+  help_search_placeholder: "Buka termu Latin, abreviatura, ka signifikadu",
+  help_results_count: "Termu {{count}} hetan",
+  help_no_results: "La iha termu ne'ebé hanesan.",
 
   // Patients Screen
   patients_clinical_intake: "Admisaun Klínika",

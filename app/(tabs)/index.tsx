@@ -1,5 +1,6 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import i18n, { SUPPORTED_LANGUAGES } from "@/i18n";
+import { hasDoctorPassword, setAppLocked } from "@/services/auth";
 import { getDB } from "@/services/database";
 import { setStoredLanguage } from "@/services/language";
 import { Doctor } from "@/types/schema";
@@ -30,18 +31,22 @@ export default function HomeScreen() {
 
   // Form states for first-time doctor registration
   const [docName, setDocName] = useState("");
+  const [email, setEmail] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [license, setLicense] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [signatureUri, setSignatureUri] = useState("");
 
-  // Stats
+  // Snapshot stats
   const [patientCount, setPatientCount] = useState(0);
-  const [activeDrs, setActiveDrs] = useState(0);
+  const [todayPrescriptionCount, setTodayPrescriptionCount] = useState(0);
+  const [totalPrescriptionCount, setTotalPrescriptionCount] = useState(0);
+  const [topMedication, setTopMedication] = useState<string | null>(null);
 
   const pickSignature = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         aspect: [16, 9],
         quality: 0.5,
@@ -65,21 +70,35 @@ export default function HomeScreen() {
     try {
       const db = await getDB();
       const docs = await db.getAllAsync<Doctor>(
-        "SELECT * FROM doctors LIMIT 1;",
+        "SELECT * FROM doctors ORDER BY id ASC LIMIT 1;",
       );
       if (docs.length > 0) {
         setDoctor(docs[0]);
+      } else {
+        setDoctor(null);
       }
 
-      const pCount = await db.getAllAsync<{ count: number }>(
+      const pCount = await db.getFirstAsync<{ count: number }>(
         "SELECT COUNT(*) as count FROM patients;",
       );
-      if (pCount.length > 0) setPatientCount(pCount[0].count);
+      setPatientCount(pCount?.count ?? 0);
 
-      const dCount = await db.getAllAsync<{ count: number }>(
-        "SELECT COUNT(*) as count FROM doctors;",
+      const today = new Date().toISOString().split("T")[0];
+      const todayCount = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM prescriptions WHERE date = ?;",
+        today,
       );
-      if (dCount.length > 0) setActiveDrs(dCount[0].count);
+      setTodayPrescriptionCount(todayCount?.count ?? 0);
+
+      const totalRx = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM prescriptions;",
+      );
+      setTotalPrescriptionCount(totalRx?.count ?? 0);
+
+      const topMed = await db.getFirstAsync<{ name: string; count: number }>(
+        "SELECT name, COUNT(*) as count FROM medications GROUP BY name ORDER BY count DESC, name ASC LIMIT 1;",
+      );
+      setTopMedication(topMed?.name ?? null);
     } catch (e) {
       console.error(e);
     } finally {
@@ -92,52 +111,90 @@ export default function HomeScreen() {
   }, []);
 
   const handleRegisterDoctor = async () => {
-    if (!docName || !specialty) {
-      Alert.alert(t("error"), t("home_error_name_specialty"));
+    if (!docName || !email || !specialty) {
+      Alert.alert(t("error"), t("auth_email_required"));
+      return;
+    }
+
+    if (!isEditing && !password.trim()) {
+      Alert.alert(t("error"), t("auth_password_required"));
       return;
     }
 
     try {
       const db = await getDB();
       if (doctor && isEditing) {
-        await db.runAsync(
-          "UPDATE doctors SET name=?, license_number=?, specialty=?, phone=?, signature=? WHERE id=?",
-          docName,
-          license,
-          specialty,
-          phone,
-          signatureUri,
-          doctor.id,
-        );
+        if (password.trim()) {
+          await db.runAsync(
+            "UPDATE doctors SET name=?, email=?, license_number=?, specialty=?, phone=?, signature=?, password=? WHERE id=?",
+            docName,
+            email,
+            license,
+            specialty,
+            phone,
+            signatureUri,
+            password,
+            doctor.id,
+          );
+        } else {
+          await db.runAsync(
+            "UPDATE doctors SET name=?, email=?, license_number=?, specialty=?, phone=?, signature=? WHERE id=?",
+            docName,
+            email,
+            license,
+            specialty,
+            phone,
+            signatureUri,
+            doctor.id,
+          );
+        }
+
         setDoctor({
           ...doctor,
           name: docName,
+          email,
           license_number: license,
-          specialty: specialty,
-          phone: phone,
+          specialty,
+          phone,
           signature: signatureUri,
+          password: password.trim() ? password : doctor.password,
         });
+        setPassword("");
         setIsEditing(false);
         Alert.alert(t("success"), t("home_profile_updated"));
       } else {
+        const count = await db.getFirstAsync<{ count: number }>(
+          "SELECT COUNT(*) as count FROM doctors",
+        );
+
+        if ((count?.count ?? 0) > 0) {
+          Alert.alert(t("error"), t("home_error_single_doctor"));
+          await fetchData();
+          return;
+        }
+
         const result = await db.runAsync(
-          "INSERT INTO doctors (name, license_number, specialty, phone, signature) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO doctors (name, email, license_number, specialty, phone, signature, password) VALUES (?, ?, ?, ?, ?, ?, ?)",
           docName,
+          email,
           license,
           specialty,
           phone,
           signatureUri,
+          password,
         );
 
         setDoctor({
           id: result.lastInsertRowId,
           name: docName,
+          email,
           license_number: license,
-          specialty: specialty,
-          phone: phone,
+          specialty,
+          phone,
           signature: signatureUri,
+          password,
         });
-        setActiveDrs((prev) => prev + 1);
+        setPassword("");
         Alert.alert(t("success"), t("home_welcome_message"));
       }
     } catch (e) {
@@ -159,21 +216,43 @@ export default function HomeScreen() {
     ]);
   };
 
+  const handleLogout = async () => {
+    const canLock = await hasDoctorPassword();
+    if (!canLock) {
+      Alert.alert(t("error"), t("auth_set_password_before_logout"));
+      setDocName(doctor?.name || "");
+      setEmail(doctor?.email || "");
+      setSpecialty(doctor?.specialty || "");
+      setLicense(doctor?.license_number || "");
+      setPhone(doctor?.phone || "");
+      setSignatureUri(doctor?.signature || "");
+      setIsEditing(true);
+      return;
+    }
+
+    await setAppLocked(true);
+    Alert.alert(t("success"), t("auth_logged_out"));
+    router.replace("/lock");
+  };
+
   const showProfileMenu = () => {
     Alert.alert(t("home_profile_options"), t("home_manage_workspace"), [
       {
         text: t("home_edit_profile"),
         onPress: () => {
           setDocName(doctor?.name || "");
+          setEmail(doctor?.email || "");
           setSpecialty(doctor?.specialty || "");
           setLicense(doctor?.license_number || "");
           setPhone(doctor?.phone || "");
           setSignatureUri(doctor?.signature || "");
+          setPassword("");
           setIsEditing(true);
         },
       },
       { text: t("home_export_csv"), onPress: exportCSV },
       { text: t("home_change_language"), onPress: showLanguagePicker },
+      { text: t("auth_logout"), onPress: handleLogout },
       {
         text: t("home_delete_profile"),
         onPress: confirmDelete,
@@ -197,14 +276,22 @@ export default function HomeScreen() {
       await db.runAsync("DELETE FROM prescriptions");
       await db.runAsync("DELETE FROM patients");
       await db.runAsync("DELETE FROM doctors");
+      await db.runAsync(
+        "DELETE FROM settings WHERE key IN ('app_locked', 'last_background_at')",
+      );
+
       setDoctor(null);
       setIsEditing(false);
       setPatientCount(0);
-      setActiveDrs(0);
+      setTodayPrescriptionCount(0);
+      setTotalPrescriptionCount(0);
+      setTopMedication(null);
       setDocName("");
+      setEmail("");
       setSpecialty("");
       setLicense("");
       setPhone("");
+      setPassword("");
       setSignatureUri("");
       Alert.alert(t("delete"), t("home_workspace_cleared"));
     } catch (e) {
@@ -249,25 +336,44 @@ export default function HomeScreen() {
     return <SafeAreaView className="flex-1 bg-surface" />;
   }
 
-  // --- DOCTOR ONBOARDING (FIRST TIME OPENING APP) ---
   if (!doctor || isEditing) {
     return (
       <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-        <View className="px-6 py-4 flex-row items-center border-b border-outline_variant">
-          <IconSymbol name="cross.case.fill" size={24} color="#00488d" />
-          <Text className="text-xl font-display font-extrabold text-primary ml-3">
-            DoctorScript
-          </Text>
+        <View className="px-6 py-4 flex-row items-center justify-between border-b border-outline_variant">
+          <View className="flex-row items-center">
+            <IconSymbol name="cross.case.fill" size={24} color="#00488d" />
+            <Text className="text-xl font-display font-extrabold text-primary ml-3">
+              DoctorScript
+            </Text>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+              onPress={() => router.push("/about")}
+            >
+              <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
+            </TouchableOpacity>
+            {!isEditing && (
+              <TouchableOpacity
+                className="px-3 py-2 rounded-lg bg-surface_container_high"
+                onPress={showLanguagePicker}
+              >
+                <Text className="text-primary text-xs font-bold">
+                  {t("home_change_language")}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
         <ScrollView contentContainerClassName="p-6 pb-24">
-          <View className="mb-8">
-            <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1">
+          <View className="mb-8 items-center">
+            <Text className="text-primary font-bold tracking-wider text-xs uppercase mb-1 text-center">
               {isEditing ? t("home_edit_profile") : t("home_welcome_setup")}
             </Text>
-            <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2">
+            <Text className="font-display text-4xl font-extrabold text-on_surface leading-tight mb-2 text-center">
               {t("home_practitioner_profile")}
             </Text>
-            <Text className="text-on_surface_variant leading-relaxed text-base">
+            <Text className="text-on_surface_variant leading-relaxed text-base text-center">
               {isEditing ? t("home_edit_desc") : t("home_setup_desc")}
             </Text>
           </View>
@@ -312,7 +418,23 @@ export default function HomeScreen() {
               />
             </View>
 
-            <View className="mb-6">
+            <View className="mb-4">
+              <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2 uppercase">
+                {t("home_email")}
+              </Text>
+              <TextInput
+                className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
+                placeholder={t("home_email_placeholder")}
+                placeholderTextColor="#727783"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View className="mb-4">
               <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2 uppercase">
                 {t("home_contact_phone")}
               </Text>
@@ -324,6 +446,27 @@ export default function HomeScreen() {
                 value={phone}
                 onChangeText={setPhone}
               />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-xs font-bold text-on_surface_variant tracking-wide mb-2 uppercase">
+                {t("auth_password")}
+              </Text>
+              <TextInput
+                className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
+                placeholder={t("auth_password_placeholder")}
+                placeholderTextColor="#727783"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {isEditing && (
+                <Text className="text-xs text-on_surface_variant mt-2">
+                  {t("auth_password_edit_hint")}
+                </Text>
+              )}
             </View>
 
             <View className="mb-8">
@@ -355,7 +498,10 @@ export default function HomeScreen() {
               {isEditing && (
                 <TouchableOpacity
                   className="flex-1 bg-surface_container_highest py-4 rounded-lg items-center shadow-sm"
-                  onPress={() => setIsEditing(false)}
+                  onPress={() => {
+                    setPassword("");
+                    setIsEditing(false);
+                  }}
                 >
                   <Text className="font-display font-bold text-on_surface text-base">
                     {t("cancel")}
@@ -379,11 +525,9 @@ export default function HomeScreen() {
     );
   }
 
-  // --- HOME DASHBOARD (DOCTOR EXISTS) ---
   return (
     <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
       <ScrollView contentContainerClassName="pb-24">
-        {/* Top App Bar */}
         <View className="px-6 py-4 flex-row items-center justify-between border-b border-outline_variant">
           <View className="flex-row items-center gap-3">
             <IconSymbol name="cross.case.fill" size={24} color="#00488d" />
@@ -391,32 +535,38 @@ export default function HomeScreen() {
               DoctorScript
             </Text>
           </View>
-          <TouchableOpacity
-            className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
-            onPress={showProfileMenu}
-          >
-            <IconSymbol
-              name="person.crop.circle.fill"
-              size={24}
-              color="#424752"
-            />
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+              onPress={() => router.push("/about")}
+            >
+              <IconSymbol name="info.circle.fill" size={20} color="#00488d" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-surface_container_high items-center justify-center"
+              onPress={showProfileMenu}
+            >
+              <IconSymbol
+                name="person.crop.circle.fill"
+                size={24}
+                color="#424752"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="px-6 py-8">
-          {/* Hero Section */}
           <View className="relative overflow-hidden rounded-xl bg-primary p-6 mb-8">
-            <View className="relative z-10">
-              <Text className="text-3xl font-display font-extrabold text-white mb-2">
+            <View className="relative z-10 items-center">
+              <Text className="text-3xl font-display font-extrabold text-white mb-2 text-center">
                 {t("home_welcome_back", { name: doctor.name })}
               </Text>
-              <Text className="text-white text-base leading-relaxed opacity-90">
+              <Text className="text-white text-base leading-relaxed opacity-90 text-center">
                 {t("home_hero_desc")}
               </Text>
             </View>
           </View>
 
-          {/* Action Grid */}
           <View className="mb-8 gap-4">
             <TouchableOpacity
               className="bg-surface_container_lowest p-6 rounded-xl border border-outline_variant flex-row items-center shadow-sm"
@@ -459,40 +609,46 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Stats Panel */}
           <View className="bg-surface_container_high rounded-xl p-6 shadow-sm">
-            <Text className="text-lg font-display font-bold mb-4 text-on_surface">
+            <Text className="text-lg font-display font-bold mb-4 text-on_surface text-center">
               {t("home_today_snapshot")}
             </Text>
 
-            <View className="flex-row justify-between mb-4 border-b border-outline_variant pb-4">
-              <View>
-                <Text className="text-xs text-on_surface_variant uppercase font-bold tracking-wider">
-                  {t("home_patients_stat")}
+            <View className="gap-4">
+              <View className="flex-row justify-between border-b border-outline_variant pb-3">
+                <Text className="text-sm font-bold text-on_surface_variant">
+                  {t("home_registered_patients")}
                 </Text>
-                <Text className="text-2xl font-display font-bold text-on_surface mt-1">
+                <Text className="text-sm font-bold text-on_surface">
                   {patientCount}
                 </Text>
               </View>
-              <View>
-                <Text className="text-xs text-on_surface_variant uppercase font-bold tracking-wider">
-                  {t("home_active_drs")}
-                </Text>
-                <Text className="text-2xl font-display font-bold text-on_surface mt-1">
-                  {activeDrs}
-                </Text>
-              </View>
-            </View>
 
-            <View className="gap-2">
-              <View className="flex-row justify-between">
-                <Text className="text-sm font-bold text-on_surface">
-                  {t("home_pharmacy_fulfilment")}
+              <View className="flex-row justify-between border-b border-outline_variant pb-3">
+                <Text className="text-sm font-bold text-on_surface_variant">
+                  {t("home_prescriptions_today")}
                 </Text>
-                <Text className="text-sm font-bold text-tertiary">92%</Text>
+                <Text className="text-sm font-bold text-on_surface">
+                  {todayPrescriptionCount}
+                </Text>
               </View>
-              <View className="h-2 w-full bg-surface_container_lowest rounded-full overflow-hidden">
-                <View className="h-full bg-tertiary" style={{ width: "92%" }} />
+
+              <View className="flex-row justify-between border-b border-outline_variant pb-3">
+                <Text className="text-sm font-bold text-on_surface_variant">
+                  {t("home_prescriptions_total")}
+                </Text>
+                <Text className="text-sm font-bold text-on_surface">
+                  {totalPrescriptionCount}
+                </Text>
+              </View>
+
+              <View className="flex-row justify-between">
+                <Text className="text-sm font-bold text-on_surface_variant">
+                  {t("home_most_prescribed_medicine")}
+                </Text>
+                <Text className="text-sm font-bold text-on_surface max-w-[55%] text-right">
+                  {topMedication ?? t("home_none")}
+                </Text>
               </View>
             </View>
           </View>
@@ -501,4 +657,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-

@@ -1,10 +1,12 @@
 export interface Doctor {
   id: number;
   name: string;
+  email?: string;
   license_number: string;
   specialty: string;
   phone: string;
   signature?: string;
+  password?: string;
 }
 
 export interface Patient {

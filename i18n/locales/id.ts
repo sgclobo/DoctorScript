@@ -9,6 +9,7 @@ const id = {
   tab_home: "Beranda",
   tab_patients: "Pasien",
   tab_prescriptions: "Resep",
+  tab_help: "Bantuan",
 
   // Home Screen
   home_welcome_setup: "Pengaturan Awal",
@@ -19,6 +20,7 @@ const id = {
   home_edit_desc:
     "Perbarui detail praktisi dan tanda tangan digital Anda di bawah ini.",
   home_full_name: "Nama Lengkap Anda",
+  home_email: "Email",
   home_specialty: "Spesialisasi",
   home_license: "Nomor Lisensi (Opsional)",
   home_contact_phone: "Telepon Kontak (Opsional)",
@@ -55,6 +57,88 @@ const id = {
   home_specialty_placeholder: "mis. Praktik Umum",
   home_license_placeholder: "mis. SIP-12345",
   home_phone_placeholder: "+62 8xx-xxxx-xxxx",
+  home_email_placeholder: "nama@contoh.com",
+  home_registered_patients: "Pasien terdaftar",
+  home_prescriptions_today: "Resep hari ini",
+  home_prescriptions_total: "Total resep",
+  home_most_prescribed_medicine: "Obat paling sering diresepkan",
+  home_none: "Tidak ada",
+  home_error_single_doctor:
+    "Hanya satu dokter yang dapat terdaftar di perangkat ini.",
+
+  // Auth
+  auth_password: "Kata sandi",
+  auth_password_placeholder: "Masukkan kata sandi",
+  auth_password_required: "Silakan buat kata sandi untuk melanjutkan.",
+  auth_email_required: "Silakan masukkan email untuk melanjutkan.",
+  auth_password_edit_hint:
+    "Kosongkan jika ingin tetap menggunakan kata sandi saat ini.",
+  auth_logout: "Keluar",
+  auth_logged_out: "Berhasil keluar.",
+  auth_enter_password: "Silakan masukkan kata sandi Anda.",
+  auth_invalid_password: "Kata sandi salah.",
+  auth_unlock: "Buka",
+  auth_unlock_title: "Sesi terkunci",
+  auth_unlock_subtitle: "Masukkan kata sandi untuk melanjutkan.",
+  auth_set_password_before_logout:
+    "Silakan atur kata sandi di Edit Profil sebelum logout.",
+  auth_password_missing:
+    "Belum ada kata sandi untuk dokter ini. Kembali dan atur di Edit Profil.",
+  auth_back_home: "Kembali ke Beranda",
+  auth_forgot_password: "Lupa kata sandi? Pulihkan via email",
+  auth_recovery_email_placeholder: "Masukkan email terdaftar",
+  auth_recover_via_email: "Kirim Email Pemulihan",
+  auth_recovery_sent:
+    "Draf email pemulihan dibuka. Kirim dari aplikasi email Anda.",
+  auth_recovery_missing_email:
+    "Belum ada email yang terdaftar untuk profil dokter ini.",
+  auth_recovery_email_mismatch:
+    "Email tidak cocok dengan email dokter yang terdaftar.",
+  auth_recovery_missing_password: "Belum ada kata sandi untuk dokter ini.",
+  auth_recovery_open_failed:
+    "Tidak dapat membuka aplikasi email untuk pemulihan.",
+
+  // About & Guide
+  about_back: "Kembali",
+  about_title: "Tentang DoctorScript",
+  about_subtitle: "Dukungan resep praktis untuk klinik",
+  about_tab_about: "Tentang",
+  about_tab_guide: "Panduan Pengguna",
+  about_created_by: "Dibuat oleh TimorApps",
+  about_description:
+    "DoctorScript membantu klinisi mendaftarkan pasien, membuat resep digital, dan mengelola data dengan cepat.",
+  about_features:
+    "Fitur utama: antarmuka multibahasa, manajemen pasien, pembuatan resep, ekspor data, dan penguncian aplikasi.",
+  about_privacy:
+    "Data disimpan secara lokal di perangkat Anda. Lindungi perangkat dan kata sandi aplikasi untuk menjaga kerahasiaan.",
+  guide_step_1_title: "1. Daftarkan profil Anda",
+  guide_step_1_desc:
+    "Masukkan detail praktisi, buat kata sandi, dan simpan tanda tangan digital.",
+  guide_step_2_title: "2. Tambah pasien",
+  guide_step_2_desc:
+    "Buka tab Pasien untuk mendaftarkan nama, tanggal lahir, dan nomor telepon.",
+  guide_step_3_title: "3. Buat resep",
+  guide_step_3_desc:
+    "Buka tab Resep, pilih pasien, tambahkan obat dan instruksi dosis, lalu simpan.",
+  guide_step_4_title: "4. Ekspor dan amankan",
+  guide_step_4_desc:
+    "Gunakan opsi ekspor, logout bila perlu, dan aplikasi akan meminta kata sandi setelah idle timeout.",
+  guide_step_5_title: "5. Simpan sebagai app (Tambahkan ke Layar Utama)",
+  guide_step_5_desc_1:
+    "Di Android Chrome: buka menu browser (tiga titik), lalu pilih Tambahkan ke layar utama.",
+  guide_step_5_desc_2:
+    "Di iPhone Safari: ketuk Bagikan, lalu pilih Tambah ke Layar Utama.",
+  guide_step_5_desc_3:
+    "Setelah itu, buka DoctorScript dari layar utama seperti aplikasi native.",
+
+  // Help tab
+  help_reference: "Referensi Cepat",
+  help_title: "Istilah Latin untuk Resep",
+  help_subtitle:
+    "Istilah Latin dan singkatan yang umum digunakan pada resep medis.",
+  help_search_placeholder: "Cari istilah Latin, singkatan, atau arti",
+  help_results_count: "{{count}} istilah ditemukan",
+  help_no_results: "Tidak ada istilah yang cocok.",
 
   // Patients Screen
   patients_clinical_intake: "Pendaftaran Klinis",
