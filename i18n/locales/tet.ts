@@ -192,6 +192,7 @@ const tet = {
   rx_error_save: "La konsege rai reseita",
   rx_success_created: "Reseita kria ho susesu",
   rx_error_pdf: "La konsege jera PDF",
+  rx_pdf_generated: "Reseita PDF jera ho susesu",
   rx_error_photo: "La konsege rai foto",
   rx_image_saved: "Imajen rai ba galeria",
   rx_qty: "Qty:",

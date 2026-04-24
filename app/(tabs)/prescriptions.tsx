@@ -6,6 +6,7 @@ import * as MediaLibrary from "expo-media-library";
 import * as Print from "expo-print";
 import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
+import html2canvas from "html2canvas";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -159,6 +160,12 @@ export default function PrescriptionsScreen() {
 
   const exportPDF = async () => {
     if (!detailData) return;
+
+    const patientNameSafe = detailData.patient_name
+      .replace(/[^a-zA-Z0-9]/g, "_")
+      .slice(0, 30);
+    const filename = `Rx-${patientNameSafe}-${detailData.date}.pdf`;
+
     const medRows = detailData.medications
       .map(
         (m: any) => `
@@ -214,15 +221,24 @@ export default function PrescriptionsScreen() {
 
     try {
       const { uri } = await Print.printToFileAsync({ html });
-      const timestamp = new Date().getTime();
-      const uniqueNewUri = `${(FileSystem as any).cacheDirectory}R-${detailData.patient_name.replace(/[^a-zA-Z0-9]/g, "_")}-${detailData.date}-${timestamp}.pdf`;
-      await (FileSystem as any).copyAsync({ from: uri, to: uniqueNewUri });
-      if (Platform.OS === "ios" || Platform.OS === "android") {
+      if (Platform.OS === "web") {
+        // On web, create a download link with proper filename
+        const link = document.createElement("a");
+        link.href = uri;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (Platform.OS === "ios" || Platform.OS === "android") {
+        const timestamp = new Date().getTime();
+        const uniqueNewUri = `${(FileSystem as any).cacheDirectory}${filename.replace(".pdf", "-") + timestamp}.pdf`;
+        await (FileSystem as any).copyAsync({ from: uri, to: uniqueNewUri });
         await Sharing.shareAsync(uniqueNewUri, {
           UTI: "com.adobe.pdf",
           mimeType: "application/pdf",
         });
       }
+      Alert.alert(t("success"), t("rx_pdf_generated"));
     } catch (error) {
       console.error(error);
       Alert.alert(t("error"), t("rx_error_pdf"));
@@ -231,9 +247,34 @@ export default function PrescriptionsScreen() {
 
   const saveToGallery = async () => {
     try {
-      if (viewShotRef.current && viewShotRef.current.capture) {
-        const uri = await viewShotRef.current.capture();
+      if (Platform.OS === "web") {
+        // Web: Use html2canvas to capture prescription element and download as image
+        try {
+          const element = document.querySelector(
+            '[style*=\"background-color: white\"]',
+          );
+          if (element) {
+            const canvas = await html2canvas(element as HTMLElement);
+            const patientNameSafe = detailData.patient_name
+              .replace(/[^a-zA-Z0-9]/g, "_")
+              .slice(0, 30);
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/jpeg", 0.9);
+            link.download = `Rx-${patientNameSafe}-${detailData.date}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            Alert.alert(t("success"), t("rx_image_saved"));
+            return;
+          }
+        } catch (canvasErr) {
+          console.log("Canvas capture failed:", canvasErr);
+        }
+      }
 
+      // Native (iOS/Android) fallback
+      if (viewShotRef.current && (viewShotRef.current as any).capture) {
+        const uri = await (viewShotRef.current as any).capture();
         let savedToGallery = false;
         try {
           const permission = await MediaLibrary.requestPermissionsAsync();
@@ -249,19 +290,23 @@ export default function PrescriptionsScreen() {
           );
         }
 
-        if (!savedToGallery) {
-          if (Platform.OS === "ios" || Platform.OS === "android") {
-            const timestamp = new Date().getTime();
-            const uniqueNewUri = `${(FileSystem as any).cacheDirectory}R-${detailData.patient_name.replace(/[^a-zA-Z0-9]/g, "_")}-${detailData.date}-${timestamp}.jpg`;
-            await (FileSystem as any).copyAsync({
-              from: uri,
-              to: uniqueNewUri,
-            });
-            await Sharing.shareAsync(uniqueNewUri, {
-              mimeType: "image/jpeg",
-              dialogTitle: t("rx_save_image"),
-            });
-          }
+        if (
+          !savedToGallery &&
+          (Platform.OS === "ios" || Platform.OS === "android")
+        ) {
+          const timestamp = new Date().getTime();
+          const patientNameSafe = detailData.patient_name
+            .replace(/[^a-zA-Z0-9]/g, "_")
+            .slice(0, 30);
+          const uniqueNewUri = `${(FileSystem as any).cacheDirectory}Rx-${patientNameSafe}-${detailData.date}-${timestamp}.jpg`;
+          await (FileSystem as any).copyAsync({
+            from: uri,
+            to: uniqueNewUri,
+          });
+          await Sharing.shareAsync(uniqueNewUri, {
+            mimeType: "image/jpeg",
+            dialogTitle: t("rx_save_image"),
+          });
         }
       }
     } catch (err) {

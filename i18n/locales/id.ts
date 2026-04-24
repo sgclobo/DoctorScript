@@ -193,6 +193,7 @@ const id = {
   rx_error_save: "Gagal menyimpan resep",
   rx_success_created: "Resep berhasil dibuat",
   rx_error_pdf: "Gagal membuat PDF",
+  rx_pdf_generated: "Resep PDF berhasil dibuat",
   rx_error_photo: "Gagal menyimpan foto",
   rx_image_saved: "Gambar tersimpan ke galeri",
   rx_qty: "Jml:",

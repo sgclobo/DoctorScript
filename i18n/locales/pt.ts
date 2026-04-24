@@ -193,6 +193,7 @@ const pt = {
   rx_error_save: "Falha ao salvar receita",
   rx_success_created: "Receita criada com sucesso",
   rx_error_pdf: "Falha ao gerar PDF",
+  rx_pdf_generated: "Receita PDF gerada com sucesso",
   rx_error_photo: "Falha ao salvar foto",
   rx_image_saved: "Imagem salva na galeria",
   rx_qty: "Qtd:",

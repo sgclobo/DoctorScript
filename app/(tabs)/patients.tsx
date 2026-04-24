@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
     Alert,
+    Platform,
     ScrollView,
     Text,
     TextInput,
@@ -118,12 +119,32 @@ export default function PatientsScreen() {
                 {t("patients_dob").toUpperCase()}
               </Text>
               <View className="relative">
+                <TouchableOpacity
+                  onPress={() => {
+                    if (Platform.OS === "web") {
+                      const input = document.createElement("input");
+                      input.type = "date";
+                      input.value = dob;
+                      input.onchange = (e: any) => setDob(e.target.value);
+                      input.click();
+                    } else {
+                      // Native date picker would go here
+                      Alert.alert("Info", "Date Picker:");
+                    }
+                  }}
+                  className="w-full bg-surface_container_low border-0 p-4 rounded-lg"
+                >
+                  <Text className="text-on_surface font-medium">
+                    {dob ? dob : t("patients_dob_placeholder")}
+                  </Text>
+                </TouchableOpacity>
                 <TextInput
                   className="w-full bg-surface_container_low border-0 p-4 rounded-lg text-on_surface font-medium"
                   placeholder={t("patients_dob_placeholder")}
                   placeholderTextColor="#727783"
                   value={dob}
                   onChangeText={setDob}
+                  style={{ display: "none" }}
                 />
               </View>
             </View>

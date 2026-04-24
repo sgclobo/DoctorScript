@@ -192,6 +192,7 @@ const en = {
   rx_error_save: "Failed to save prescription",
   rx_success_created: "Prescription created successfully",
   rx_error_pdf: "Failed to generate PDF",
+  rx_pdf_generated: "Prescription PDF generated successfully",
   rx_error_photo: "Failed to save photo",
   rx_image_saved: "Image saved to gallery",
   rx_qty: "Qty:",
