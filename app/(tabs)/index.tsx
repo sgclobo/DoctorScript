@@ -15,7 +15,6 @@ import {
     Image,
     Modal,
     Platform,
-    Pressable,
     ScrollView,
     Text,
     TextInput,
@@ -304,18 +303,19 @@ export default function HomeScreen() {
       animationType="fade"
       onRequestClose={() => setLangPickerVisible(false)}
     >
-      <Pressable
+      <View
         style={{
           flex: 1,
           backgroundColor: "rgba(0,0,0,0.5)",
           justifyContent: "flex-end",
         }}
-        onPress={() => setLangPickerVisible(false)}
       >
-        <Pressable
-          className="bg-surface rounded-t-2xl p-6 pb-12"
-          onPress={(e) => e.stopPropagation()}
-        >
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          activeOpacity={1}
+          onPress={() => setLangPickerVisible(false)}
+        />
+        <View className="bg-surface rounded-t-2xl p-6 pb-12">
           <Text className="font-display font-bold text-xl text-on_surface mb-6 text-center">
             {t("lang_select")}
           </Text>
@@ -340,8 +340,8 @@ export default function HomeScreen() {
           >
             <Text className="text-secondary font-medium">{t("cancel")}</Text>
           </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 
@@ -352,18 +352,19 @@ export default function HomeScreen() {
       animationType="fade"
       onRequestClose={() => setMenuVisible(false)}
     >
-      <Pressable
+      <View
         style={{
           flex: 1,
           backgroundColor: "rgba(0,0,0,0.5)",
           justifyContent: "flex-end",
         }}
-        onPress={() => setMenuVisible(false)}
       >
-        <Pressable
-          className="bg-surface rounded-t-2xl p-6 pb-12"
-          onPress={(e) => e.stopPropagation()}
-        >
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          activeOpacity={1}
+          onPress={() => setMenuVisible(false)}
+        />
+        <View className="bg-surface rounded-t-2xl p-6 pb-12">
           <Text className="font-display font-bold text-xl text-on_surface mb-1 text-center">
             {t("home_profile_options")}
           </Text>
@@ -435,8 +436,8 @@ export default function HomeScreen() {
           >
             <Text className="text-secondary font-medium">{t("cancel")}</Text>
           </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 
@@ -447,18 +448,15 @@ export default function HomeScreen() {
       animationType="fade"
       onRequestClose={() => setDeleteConfirmVisible(false)}
     >
-      <Pressable
+      <View
         style={{
           flex: 1,
           backgroundColor: "rgba(0,0,0,0.5)",
           justifyContent: "center",
+          paddingHorizontal: 24,
         }}
-        onPress={() => setDeleteConfirmVisible(false)}
       >
-        <Pressable
-          className="bg-surface mx-6 rounded-2xl p-6"
-          onPress={(e) => e.stopPropagation()}
-        >
+        <View className="bg-surface rounded-2xl p-6">
           <Text className="font-display font-bold text-xl text-on_surface mb-2 text-center">
             {t("home_delete_workspace")}
           </Text>
@@ -482,8 +480,8 @@ export default function HomeScreen() {
           >
             <Text className="text-secondary font-medium">{t("cancel")}</Text>
           </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 

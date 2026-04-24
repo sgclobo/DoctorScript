@@ -1,4 +1,4 @@
-const CACHE_VERSION = "1.0.0";
+const CACHE_VERSION = "2.0.0";
 const CACHE_NAME = `doctorscript-pwa-${CACHE_VERSION}`;
 const APP_SHELL = [
   "/",
