@@ -1,8 +1,10 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { getDB, initDB } from "../services/database";
+import "../services/db-instance";
 
 type Stats = {
   patients: number;
@@ -18,31 +20,39 @@ export default function Index() {
     prescriptions: 0,
   });
 
+  const loadStats = useCallback(async () => {
+    await initDB();
+    const db = await getDB();
+    const patientCount = await db.getFirstAsync<{ count: number }>(
+      "SELECT COUNT(*) as count FROM patients",
+    );
+    const doctorCount = await db.getFirstAsync<{ count: number }>(
+      "SELECT COUNT(*) as count FROM doctors",
+    );
+    const prescriptionCount = await db.getFirstAsync<{ count: number }>(
+      "SELECT COUNT(*) as count FROM prescriptions",
+    );
+
+    setStats({
+      patients: patientCount?.count ?? 0,
+      doctors: doctorCount?.count ?? 0,
+      prescriptions: prescriptionCount?.count ?? 0,
+    });
+  }, []);
+
   useEffect(() => {
-    const loadStats = async () => {
-      await initDB();
-      const db = await getDB();
-      const patientCount = await db.getFirstAsync<{ count: number }>(
-        "SELECT COUNT(*) as count FROM patients",
-      );
-      const doctorCount = await db.getFirstAsync<{ count: number }>(
-        "SELECT COUNT(*) as count FROM doctors",
-      );
-      const prescriptionCount = await db.getFirstAsync<{ count: number }>(
-        "SELECT COUNT(*) as count FROM prescriptions",
-      );
-
-      setStats({
-        patients: patientCount?.count ?? 0,
-        doctors: doctorCount?.count ?? 0,
-        prescriptions: prescriptionCount?.count ?? 0,
-      });
-    };
-
     void loadStats().catch((error) => {
       console.error("Failed to load dashboard stats", error);
     });
-  }, []);
+  }, [loadStats]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadStats().catch((error) => {
+        console.error("Failed to refresh dashboard stats", error);
+      });
+    }, [loadStats]),
+  );
 
   return (
     <View style={styles.container}>

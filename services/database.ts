@@ -1,16 +1,34 @@
 import * as SQLite from "expo-sqlite";
 
-let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
-let initPromise: Promise<void> | null = null;
+import {
+    getSharedDb,
+    getSharedDbPromise,
+    getSharedInitPromise,
+    setSharedDb,
+    setSharedDbPromise,
+    setSharedInitPromise,
+} from "./db-instance";
 
 export const getDB = async () => {
-  if (!dbPromise) {
-    dbPromise = SQLite.openDatabaseAsync("doctorscript2.db");
+  const existing = getSharedDb();
+  if (existing) {
+    return existing;
   }
+
+  let dbPromise = getSharedDbPromise();
+  if (!dbPromise) {
+    dbPromise = SQLite.openDatabaseAsync("doctorscript2.db").then((db) => {
+      setSharedDb(db);
+      return db;
+    });
+    setSharedDbPromise(dbPromise);
+  }
+
   return await dbPromise;
 };
 
 export const initDB = async () => {
+  let initPromise = getSharedInitPromise();
   if (initPromise) {
     return await initPromise;
   }
@@ -76,11 +94,12 @@ export const initDB = async () => {
       await db.execAsync("ALTER TABLE doctors ADD COLUMN signature TEXT;");
     }
   })();
+  setSharedInitPromise(initPromise);
 
   try {
     await initPromise;
   } catch (error) {
-    initPromise = null;
+    setSharedInitPromise(null);
     throw error;
   }
 };

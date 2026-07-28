@@ -1,5 +1,6 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Pressable,
     ScrollView,
@@ -37,6 +38,15 @@ export default function DoctorsScreen() {
       console.error("Doctors load failed", loadError);
     });
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadDoctors().catch((loadError) => {
+        setError("Could not load doctors. Please refresh and try again.");
+        console.error("Doctors focus refresh failed", loadError);
+      });
+    }, []),
+  );
 
   const saveDoctor = async () => {
     if (!name.trim()) {

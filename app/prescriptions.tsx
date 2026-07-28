@@ -1,5 +1,6 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Pressable,
     ScrollView,
@@ -42,7 +43,7 @@ export default function PrescriptionsScreen() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await initDB();
     const db = await getDB();
 
@@ -53,27 +54,35 @@ export default function PrescriptionsScreen() {
       "SELECT id, name, license_number, specialty, phone, signature FROM doctors ORDER BY id DESC",
     );
 
-    const prescriptionRows = await db.getAllAsync<PrescriptionRow>(`
-      SELECT
-        p.id,
-        p.date,
-        p.notes,
-        pa.name as patient_name,
-        d.name as doctor_name,
-        m.name as medication_name,
-        m.dosage,
-        m.frequency,
-        m.duration
-      FROM prescriptions p
-      INNER JOIN patients pa ON pa.id = p.patient_id
-      INNER JOIN doctors d ON d.id = p.doctor_id
-      LEFT JOIN medications m ON m.prescription_id = p.id
-      ORDER BY p.id DESC
-    `);
-
     setPatients(patientRows);
     setDoctors(doctorRows);
-    setRows(prescriptionRows);
+
+    try {
+      const prescriptionRows = await db.getAllAsync<PrescriptionRow>(`
+        SELECT
+          p.id,
+          p.date,
+          p.notes,
+          pa.name as patient_name,
+          d.name as doctor_name,
+          m.name as medication_name,
+          m.dosage,
+          m.frequency,
+          m.duration
+        FROM prescriptions p
+        INNER JOIN patients pa ON pa.id = p.patient_id
+        INNER JOIN doctors d ON d.id = p.doctor_id
+        LEFT JOIN medications m ON m.prescription_id = p.id
+        ORDER BY p.id DESC
+      `);
+      setRows(prescriptionRows);
+    } catch (queryError) {
+      setRows([]);
+      setError(
+        "Could not load prescription history. You can still create a new prescription.",
+      );
+      console.error("Prescriptions history query failed", queryError);
+    }
 
     if (patientRows.length > 0 && selectedPatientId === null) {
       setSelectedPatientId(patientRows[0].id);
@@ -81,7 +90,7 @@ export default function PrescriptionsScreen() {
     if (doctorRows.length > 0 && selectedDoctorId === null) {
       setSelectedDoctorId(doctorRows[0].id);
     }
-  };
+  }, [selectedDoctorId, selectedPatientId]);
 
   useEffect(() => {
     void loadData().catch((loadError) => {
@@ -90,7 +99,18 @@ export default function PrescriptionsScreen() {
       );
       console.error("Prescriptions load failed", loadError);
     });
-  }, []);
+  }, [loadData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadData().catch((loadError) => {
+        setError(
+          "Could not refresh prescription data. Please refresh and try again.",
+        );
+        console.error("Prescriptions focus refresh failed", loadError);
+      });
+    }, [loadData]),
+  );
 
   const savePrescription = async () => {
     if (!selectedPatientId || !selectedDoctorId) {
