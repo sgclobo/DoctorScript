@@ -27,7 +27,7 @@ export default function RootLayout() {
       return;
     }
 
-    void navigator.serviceWorker.register("/sw.js").catch((error) => {
+    void navigator.serviceWorker.register("/pwa/sw.js").catch((error) => {
       console.error("Service worker registration failed", error);
     });
   }, []);

@@ -13,8 +13,8 @@ export default function RootHtml({ children }: { children: React.ReactNode }) {
             content="default"
           />
           <meta name="theme-color" content="#0f766e" />
-          <link rel="manifest" href="/manifest.webmanifest" />
-          <link rel="apple-touch-icon" href="/icon-192.png" />
+          <link rel="manifest" href="/pwa/manifest.webmanifest" />
+          <link rel="apple-touch-icon" href="/pwa/icon-192.png" />
         </Head>
         <ScrollViewStyleReset />
       </head>

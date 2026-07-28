@@ -1,10 +1,10 @@
 const CACHE_NAME = "doctorscript-pwa-v1";
 const APP_SHELL = [
   "/",
-  "/manifest.webmanifest",
-  "/favicon.ico",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/pwa/manifest.webmanifest",
+  "/pwa/favicon.ico",
+  "/pwa/icon-192.png",
+  "/pwa/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
