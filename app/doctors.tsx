@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
     Pressable,
@@ -14,7 +14,6 @@ import { getDB, initDB } from "../services/database";
 import type { Doctor } from "../types/schema";
 
 export default function DoctorsScreen() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
   const [specialty, setSpecialty] = useState("");
@@ -82,9 +81,11 @@ export default function DoctorsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Pressable onPress={() => router.push("/")}>
-          <Text style={styles.backLink}>Back to Home</Text>
-        </Pressable>
+        <Link href="../index.html" asChild>
+          <Pressable>
+            <Text style={styles.backLink}>Back to Home</Text>
+          </Pressable>
+        </Link>
 
         <Text style={styles.title}>Doctor Profiles</Text>
         <Text style={styles.subtitle}>

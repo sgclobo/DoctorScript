@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -13,7 +13,6 @@ type Stats = {
 };
 
 export default function Index() {
-  const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     patients: 0,
     doctors: 0,
@@ -95,38 +94,35 @@ export default function Index() {
         </View>
 
         <View style={styles.grid}>
-          <Pressable
-            style={styles.featureCard}
-            onPress={() => router.push("/patients")}
-          >
-            <Text style={styles.featureTitle}>Patients</Text>
-            <Text style={styles.featureBody}>
-              Securely store demographic details and visit history.
-            </Text>
-            <Text style={styles.featureLink}>Open Patient Registry</Text>
-          </Pressable>
+          <Link href="./patients/index.html" asChild>
+            <Pressable style={styles.featureCard}>
+              <Text style={styles.featureTitle}>Patients</Text>
+              <Text style={styles.featureBody}>
+                Securely store demographic details and visit history.
+              </Text>
+              <Text style={styles.featureLink}>Open Patient Registry</Text>
+            </Pressable>
+          </Link>
 
-          <Pressable
-            style={styles.featureCard}
-            onPress={() => router.push("/prescriptions")}
-          >
-            <Text style={styles.featureTitle}>Prescriptions</Text>
-            <Text style={styles.featureBody}>
-              Build professional scripts with dosage and timing clarity.
-            </Text>
-            <Text style={styles.featureLink}>Create Prescription</Text>
-          </Pressable>
+          <Link href="./prescriptions/index.html" asChild>
+            <Pressable style={styles.featureCard}>
+              <Text style={styles.featureTitle}>Prescriptions</Text>
+              <Text style={styles.featureBody}>
+                Build professional scripts with dosage and timing clarity.
+              </Text>
+              <Text style={styles.featureLink}>Create Prescription</Text>
+            </Pressable>
+          </Link>
 
-          <Pressable
-            style={styles.featureCard}
-            onPress={() => router.push("/doctors")}
-          >
-            <Text style={styles.featureTitle}>Doctors</Text>
-            <Text style={styles.featureBody}>
-              Maintain practitioner profile and licensing details.
-            </Text>
-            <Text style={styles.featureLink}>Manage Doctors</Text>
-          </Pressable>
+          <Link href="./doctors/index.html" asChild>
+            <Pressable style={styles.featureCard}>
+              <Text style={styles.featureTitle}>Doctors</Text>
+              <Text style={styles.featureBody}>
+                Maintain practitioner profile and licensing details.
+              </Text>
+              <Text style={styles.featureLink}>Manage Doctors</Text>
+            </Pressable>
+          </Link>
 
           <View style={styles.featureCard}>
             <Text style={styles.featureTitle}>Privacy</Text>
